@@ -129,9 +129,9 @@ void main() {
     // float cy = st.y * rd - py * 0.3;
  
 
-    maxiter += 30;
-    rd  += 3;
-    cpx += (- 0.75) ; //mouse.x;
+    maxiter += 26;
+    rd  += .8;
+    cpx += -1.758 ; //mouse.x;
     cpy += 0 ; //mouse.y;
 
 
@@ -146,6 +146,7 @@ void main() {
     // float d1 = 0;
 
     while (md < 400 && iter < maxiter){
+        // zx -= 1e-2;
         temp = zx*zx - zy*zy + cx;
         zy = 2 * zx * zy + cy;
         iter += 1;
@@ -158,25 +159,39 @@ void main() {
     }
 
     float f = iter ; // / maxiter;
-    f = distance(vec2(zxi,zyi), vec2(cpx,cpy));
+    // f = distance(vec2(zxi,zyi), vec2(cpx,cpy));
+    f = distance(vec2(zxi,zyi), vec2(0,0));
     f *= 1;
     f = max(f,1e-4);
     f = abs(log(f)/log(10));
-    // f /= 1;
+    f = abs(log(f)/log(10));
+    f = abs(log(f)/log(10));
+    f = abs(log(f)/log(10));
+    f = abs(log(f)/log(10));
     // f = abs(log(f)/log(10));
+    // f = abs(log(f)/log(10));
+    f = abs(log(f)/log(2.71));
 
-    // f = log(f);
 
-    float col1 =  sin ( 12 * f) * 0.4 + 0.5;
-    float col2 =  sin ( 12 * f) * 0.4 + 0.5;
-    float col3 =  sin ( 12 * f) * 0.4 + 0.5;
-    // col1 *= .9;
-    // col2 = 0;
-    // col3 = 0;
-    vec3 col4 = vec3(col1*0,col2,col3);
+    float col1 =  sin ( 1 * f) * 0.6 + 0.5;
+    float col2 =  sin ( 1 * f) * 0.6 + 0.5;
+    float col3 =  sin ( 1 * f) * 0.6 + 0.5;
+
+    col1 *= .007;
+    col2 *= 0.5;
+    col3 *= 0.007;
+    
+    vec3 col4 = vec3(col1,col2,col3);
 
     col = 0.9*col + col4; //2 * iter / maxiter;
 
+    // if (
+    // ((int(gl_FragCoord.x) & 0x1) == 0) &&
+    // ((int(gl_FragCoord.y) & 0x1) == 0) 
+    // )
+    //      col *= 1;
+    // else
+    //     col = vec3(0);
 
     fragColor = vec4(col, 1.0);
 }

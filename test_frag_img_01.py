@@ -214,9 +214,9 @@ class FramebufferExample(pyglet.window.Window):
 
 
         # Crea una texture per immagazzinare il rendering
-        self.texture = self.ctx.texture((4000,4000),4) # ((width, height), 4)
-        self.program['u_resolution'] = ( 4000,4000) #self.width, self.height)  # 
-        self.program['u_mouse'] = ( 2000, 2000) #self.width, self.height)  # 
+        self.texture = self.ctx.texture((12000, 12000),4) # ((width, height), 4)
+        self.program['u_resolution'] = ( 12000, 12000) #self.width, self.height)  # 
+        self.program['u_mouse'] = ( 0, 0) #self.width, self.height)  # 
 
 
         self.texture.filter = (moderngl.NEAREST, moderngl.NEAREST)
