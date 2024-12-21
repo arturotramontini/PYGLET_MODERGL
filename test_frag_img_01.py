@@ -8,9 +8,13 @@ import pyglet.window.key
 import numpy as np
 from PIL import Image
 
+from pyrr import Matrix44
+
 import math
 import time
 import os
+
+os.system('clear')
 
 class FramebufferExample(pyglet.window.Window):
     def __init__(self, width, height):
@@ -18,6 +22,7 @@ class FramebufferExample(pyglet.window.Window):
 
 
         super().__init__(width=width, height=height, caption="Framebuffer Example",vsync=False)
+
 
 
         # --- per ricaricare fragment_shader quando lo modicico 
@@ -29,7 +34,7 @@ class FramebufferExample(pyglet.window.Window):
         # ------------
 
 
-        self.set_location(50,900)
+        self.set_location(0,1200)
 
         self.width = width
         self.height = height    
@@ -90,14 +95,24 @@ class FramebufferExample(pyglet.window.Window):
 
         # VBO per un quadrato pieno schermo
         self.vertices = self.ctx.buffer(np.array([
-            -1., -1.,  # Vertice 1
-             1., -1.,  # Vertice 2
-            -1.,  1.,  # Vertice 3
-             1.,  1.,  # Vertice 4
+            -1, -1,  # Vertice 1
+             1, -1,  # Vertice 2
+            -1,  1,  # Vertice 3
+             1,  1,  # Vertice 
         ], dtype='f4').tobytes())
 
         self.vao = self.ctx.simple_vertex_array(self.program, self.vertices, 'in_vert')
         self.program['u_resolution'] = ( self.width, self.height)  # 
+
+
+        # Definisci i limiti della tua proiezione ortografica
+        self.projection1 = Matrix44.orthogonal_projection(left=-1, right=1, bottom=-1, top=1, near=-1, far=1)
+        self.angle = np.radians(90)  # Angolo in radianti
+        self.rotation = Matrix44.from_z_rotation(self.angle)  # Rotazione attorno all'asse Y
+        self.transformation = self.projection1 @ self.rotation
+
+
+
 
         # pyglet.clock.schedule_interval(lambda dt: self.on_draw(), 1/60.0)  # 60 FPS
 
@@ -190,6 +205,8 @@ class FramebufferExample(pyglet.window.Window):
             # self.program['color'] = ( math.fabs(np.sin(t/10)), 0.5, 0.5)  # Cambia colore
             self.program['color'] = ( 0.0, 0.0, 0.0)  # Cambia colore
             # self.program['u_resolution'] = ( self.width, self.height)  # Cambia colore
+
+            self.program['mvp'].write(self.transformation.astype('f4').tobytes())
             
             self.vao.render(moderngl.TRIANGLE_STRIP)
             # self.ctx.wireframe = True
@@ -214,9 +231,25 @@ class FramebufferExample(pyglet.window.Window):
 
 
         # Crea una texture per immagazzinare il rendering
-        self.texture = self.ctx.texture((12000, 12000),4) # ((width, height), 4)
-        self.program['u_resolution'] = ( 12000, 12000) #self.width, self.height)  # 
-        self.program['u_mouse'] = ( 0, 0) #self.width, self.height)  # 
+        self.texture = self.ctx.texture((16000, 13500),4) # ((width, height), 4)
+        self.program['u_resolution'] = ( 16000, 13500) #self.width, self.height)  # 
+        # self.texture = self.ctx.texture((3200<<2, 2700<<2),4) # ((width, height), 4)
+        # self.program['u_resolution'] = ( 3200<<2, 2700<<2) #self.width, self.height)  # 
+        # self.texture = self.ctx.texture((3200, 2700),4) # ((width, height), 4)
+        # self.program['u_resolution'] = (3200, 2700) #self.width, self.height)  # 
+        # self.texture = self.ctx.texture((3840, 2160),4) # ((width, height), 4)
+        # self.program['u_resolution'] = ( 3840, 2160) #self.width, self.height)  # 
+        # self.texture = self.ctx.texture((3000>>0, 2000>>0),4) # ((width, height), 4)
+        # self.program['u_resolution'] = ( 3000>>0, 2000>>0) #self.width, self.height)  # 
+        # self.texture = self.ctx.texture((2400, 1900),4) # ((width, height), 4)
+        # self.program['u_resolution'] = ( 2400, 1900) #self.width, self.height)  # 
+        # self.texture = self.ctx.texture((3000, 2000),4) # ((width, height), 4)
+        # self.program['u_resolution'] = (3000, 2000) #self.width, self.height)  # 
+
+
+
+
+        # self.program['u_mouse'] = ( 0, 0) #self.width, self.height)  # 
 
 
         self.texture.filter = (moderngl.NEAREST, moderngl.NEAREST)
@@ -250,7 +283,7 @@ class FramebufferExample(pyglet.window.Window):
 
 
         image = Image.frombytes('RGBA', self.fbo.size, data)
-        # image = image.transpose(Image.FLIP_TOP_BOTTOM)  # Capovolge verticalmente
+        image = image.transpose(Image.FLIP_TOP_BOTTOM)  # Capovolge verticalmente
 
         # Salva l'immagine
         image.save("frame.png")
@@ -300,7 +333,11 @@ class FramebufferExample(pyglet.window.Window):
 if __name__ == "__main__":
     # window = FramebufferExample(3840>>1, 2160>>1)
     # window = FramebufferExample(960, 1080)
-    window = FramebufferExample(800, 800)
+    # window = FramebufferExample(1600,1350)
+    # window = FramebufferExample(1600,1350)
+    # window = FramebufferExample(3200>>1,2700>>1)
+    # window = FramebufferExample(2400>>1,1900>>1)
+    window = FramebufferExample(3000>>1,2000>>1)
 
     # Salva un frame con colore specificato
     # window.save_frame(color=(0.0, 1.0, 0.0))

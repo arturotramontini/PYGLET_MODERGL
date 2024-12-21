@@ -120,6 +120,9 @@ void main() {
 
 
 
+
+
+
     // float px = 0; //mouse.x;
     // float py = 0; //mouse.y;
 
@@ -129,24 +132,63 @@ void main() {
     // float cy = st.y * rd - py * 0.3;
  
 
-    maxiter += 26;
-    rd  += .8;
-    cpx += -1.758 ; //mouse.x;
-    cpy += 0 ; //mouse.y;
+    // maxiter += 26;
+    // rd  += .8;
+    // cpx += -1.758 ; //mouse.x;
+    // cpy += 0 ; //mouse.y;    
 
-
-    float cx = st.x * rd + cpx ;
-    float cy = st.y * rd + cpy ;
-    float zx = cx;
-    float zy = cy;
     float temp = 0;
-    float md = zx*zx+zy*zy;
     float zxi = 0;
     float zyi = 0;
-    // float d1 = 0;
+    float md = 0; //zx*zx+zy*zy;
+    
 
+    // =0.001 : per nascondere le righe dritte,, =1
+    col *= 0.001;
+
+    float cx = 0;
+    float cy = 0;
+
+    //-------------------------- per avere in verticale deve essere così come segue
+    maxiter += 9;
+    rd  += 3.7; 
+    cpx += 0 ;  
+    //-------------------------- per avere in verticale deve essere così come segue
+    cpy += -0.54 ; 
+
+    vec2 rp = u_mouse / u_resolution;
+    cpx -= st.x * rp.x;
+    cpy += st.y * rp.y;
+
+
+
+    cx = st.y * rd + cpy ; 
+    cy = st.x * rd + cpx ;
+    //--------------------------
+
+    // //-------------------------- per avere in orizzontale classico deve essere così come segue
+    // maxiter += 6;
+    // rd  += 2.46;
+    
+    // cpx += -0.57 ; 
+    // cpy += 0 ; 
+
+
+
+    // vec2 rp = u_mouse / u_resolution;
+    // cpx += st.x * rp.x;
+    // cpy += st.y * rp.y;
+    
+    // cx = st.x * rd + cpx ;
+    // cy = st.y * rd + cpy ;
+    // //--------------------------
+
+
+
+    float zx = cx;
+    float zy = cy;
+    // float md = zx*zx+zy*zy;
     while (md < 400 && iter < maxiter){
-        // zx -= 1e-2;
         temp = zx*zx - zy*zy + cx;
         zy = 2 * zx * zy + cy;
         iter += 1;
@@ -157,33 +199,40 @@ void main() {
             zyi = zy;
         }
     }
-
-    float f = iter ; // / maxiter;
-    // f = distance(vec2(zxi,zyi), vec2(cpx,cpy));
+    float f = iter ; 
+    float kv = 1.1 ;
     f = distance(vec2(zxi,zyi), vec2(0,0));
     f *= 1;
     f = max(f,1e-4);
-    f = abs(log(f)/log(10));
-    f = abs(log(f)/log(10));
-    f = abs(log(f)/log(10));
-    f = abs(log(f)/log(10));
+    // f = abs(log(f)/log(10));
+    // f = abs(log(f)/log(10));
+    // f = abs(log(f)/log(10));
+    // f = abs(log(f)/log(10));
     f = abs(log(f)/log(10));
     // f = abs(log(f)/log(10));
     // f = abs(log(f)/log(10));
-    f = abs(log(f)/log(2.71));
+    f = abs(log(f)/log(1.01));
+    f = abs(log(f)/log(3.3));
+    f = abs(log(f)/log(kv));
+    // f = abs(log(f)/log(kv));
+    // f = abs(log(f)/log(kv));
+    // // f = abs(log(f)/log(kv));
+    // f = abs(log(f)/log(kv));
+    // f = abs(log(f)/log(kv));
+    // f = abs(log(f)/log(kv));
 
 
-    float col1 =  sin ( 1 * f) * 0.6 + 0.5;
-    float col2 =  sin ( 1 * f) * 0.6 + 0.5;
-    float col3 =  sin ( 1 * f) * 0.6 + 0.5;
+    float col1 =  sin ( 31 * f) * 0.6 + 0.5;
+    float col2 =  sin ( 2 * f) * 0.6 + 0.5;
+    float col3 =  sin ( 3 * f) * 0.6 + 0.5;
 
-    col1 *= .007;
-    col2 *= 0.5;
-    col3 *= 0.007;
+    col1 *= 0.2;
+    col2 *= 0.86;
+    col3 *= 0.2;
     
     vec3 col4 = vec3(col1,col2,col3);
 
-    col = 0.9*col + col4; //2 * iter / maxiter;
+    col = 2.9*col + col4; //2 * iter / maxiter;
 
     // if (
     // ((int(gl_FragCoord.x) & 0x1) == 0) &&

@@ -1,0 +1,53 @@
+arturo tramontini
+
+
+
+    //-------------------------- per avere in orizzontale classico deve essere così come segue
+    maxiter += 7;
+    rd  += 2.46;
+    cpx += -0.57 ; 
+    cpy += 0 ; 
+    float cx = st.x * rd + cpx ;
+    float cy = st.y * rd + cpy ;
+    //--------------------------
+
+
+    float zx = cx;
+    float zy = cy;
+
+    while (md < 400 && iter < maxiter){
+        temp = zx*zx - zy*zy + cx;
+        zy = 2 * zx * zy + cy;
+        iter += 1;
+        zx = temp;
+        md = zx*zx+zy*zy;
+        if (md < rd){
+            zxi = zx;
+            zyi = zy;
+        }
+    }
+
+    float f = iter ; 
+    float kv = 1.1 ;
+
+    f = distance(vec2(zxi,zyi), vec2(0,0));
+    f *= 1;
+    f = max(f,1e-4);
+
+    f = abs(log(f)/log(1.01));
+    f = abs(log(f)/log(3.3));
+    f = abs(log(f)/log(kv));
+
+
+    float col1 =  sin ( 1 * f) * 0.6 + 0.5;
+    float col2 =  sin ( 2 * f) * 0.6 + 0.5;
+    float col3 =  sin ( 3 * f) * 0.6 + 0.5;
+
+    col1 *= 0.2;
+    col2 *= 0.7;
+    col3 *= 0.7;
+    
+    vec3 col4 = vec3(col1,col2,col3);
+
+    col = 0.001 * col + col4; 
+
