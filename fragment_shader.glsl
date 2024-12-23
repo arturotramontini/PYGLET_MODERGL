@@ -28,7 +28,91 @@ uniform float u_raggio;
 uniform float u_centerX;
 uniform float u_centerY;
 uniform float u_maxiter;
+
+uniform float u_niter;
+
+
 out vec4 fragColor;
+
+vec2 rotatePoint(vec2 point, float angle) {
+    float cosTheta = cos(angle);
+    float sinTheta = sin(angle);
+    mat2 rotationMatrix = mat2(cosTheta, -sinTheta,
+                               sinTheta, cosTheta);
+    return rotationMatrix * point;
+}
+
+
+vec2 rotateAroundX_old_1(vec2 point, float angle, float zDepth) {
+    float cosTheta = cos(angle);
+    float sinTheta = sin(angle);
+
+    // Aggiungiamo una componente Z fittizia
+    float y = point.y;
+    float z = zDepth;
+
+    // Rotazione attorno all'asse X
+    float newY = y * cosTheta - z * sinTheta;
+    float newZ = y * sinTheta + z * cosTheta;
+
+    // Simuliamo una proiezione prospettica ridimensionando rispetto a Z
+    float perspective = 1.0 / (1.0 + newZ);
+    return vec2(point.x * perspective, newY * perspective);
+}
+
+
+vec2 rotateAroundX_old_2(vec2 point, float angle, float zDepth) {
+    float cosTheta = cos(angle);
+    float sinTheta = sin(angle);
+
+    // Aggiungiamo una componente Z fittizia
+    float y = point.y;
+    float z = zDepth;
+
+    // Rotazione attorno all'asse X
+    float newY = y * cosTheta - z * sinTheta;
+    float newZ = y * sinTheta + z * cosTheta;
+
+    // Simuliamo una proiezione prospettica
+    float perspective = 1.0 / (1.0 + newZ);
+    return vec2(point.x, newY * perspective);
+}
+
+
+
+vec2 rotateAroundX_old_3(vec2 point, float angle, float zDepth) {
+    float cosTheta = cos(angle);
+    float sinTheta = sin(angle);
+
+    float y = point.y;
+    float z = zDepth;
+
+    float newY = y * cosTheta - z * sinTheta;
+    float newZ = y * sinTheta + z * cosTheta;
+
+    // Proiezione prospettica
+    float perspective = 1.0 / (1.0 + newZ);
+    return vec2(point.x * perspective, newY * perspective);
+}
+
+vec2 rotateAroundX(vec2 point, float angle) {
+    float cosTheta = cos(angle);
+    float sinTheta = sin(angle);
+
+    // Simuliamo la rotazione: il valore y collassa verso z
+    float newY = point.y * cosTheta;
+    return vec2(point.x, newY);
+}
+
+
+
+
+
+
+
+
+
+
 void main() {
 
 
@@ -51,6 +135,11 @@ void main() {
     vec2 st = gl_FragCoord.xy  / u_resolution.xy;
     st -=  0.5 ; 
     st.x *= (u_resolution.x / u_resolution.y);
+
+    // plane rotation
+    st = rotatePoint(st, radians(45));
+
+
 
     vec2 mouse = (u_mouse / u_resolution);
     mouse  -= 0.5;
@@ -84,39 +173,103 @@ void main() {
     if ( ( abs(gl_FragCoord.x - u_resolution.x/2) < 1 ) && ( gl_FragCoord.x > u_resolution.x/2) ){
         col = vec3(.2,.2,.2);
     }
+
     if ( ( abs(gl_FragCoord.y - u_resolution.y/2) < 1 ) && ( gl_FragCoord.y > u_resolution.y/2) ){
         col = vec3(.2,.2,.2);
     }
 
-    if ( ( abs(gl_FragCoord.y - 205) < 1 )  ){
-        col = vec3(0,.1,0);
-    }
 
-    if ( ( gl_FragCoord.y > 210  )&&( gl_FragCoord.y < 210.6  )){
-        col = vec3(0,.1,.1);
-    }
+//     if ( ( abs(gl_FragCoord.y - (1000 - 265) ) < 1)) {//} && ( gl_FragCoord.y > u_resolution.y*23/50) ){
+//         col = vec3(0,1,0);
+//     }
+ 
+//     if ( ( abs(gl_FragCoord.y - 485) < 1 )){//} && ( gl_FragCoord.y > u_resolution.y*1/33) ){
+//         col = vec3(0,1,0);
+//     }
+ 
 
-    if ( (distance (vec2(gl_FragCoord.xy) , vec2(200,300)) < 1 )  ){
-        col = vec3(.9,0,0);
-    }
-    if ( (distance (vec2(gl_FragCoord.xy) , vec2(300,200)) < 1 )  ){
-        col = vec3(.5,0,0);
-    }
+//    if ( ( abs(gl_FragCoord.x - 500) < 1 ) ){//} && (( gl_FragCoord.y - 650) > 0.4) ){
+//         col = vec3(1,.1,0);
+//     }
 
-    if(  
-    (  distance (st , mouse) < 13/u_resolution.x) &&
-    (  distance (st , mouse) > 12/u_resolution.x) 
-    )
-    {
-        col = vec3(.8,0.8,0);
-    }
+//    if ( ( abs(gl_FragCoord.x - 344) < 1 ) ){//} && (( gl_FragCoord.y - 650) > 0.4) ){
+//         col = vec3(1,.1,0);
+//     }
 
-    if  (  distance (st , center1) < 2/u_resolution.x)   {
-        col = vec3(.1,0.8,0.5);
-    }
-    if  (  distance (st , center2) < 2/u_resolution.x)   {
-        col = vec3(.1,0.5,0.8);
-    }
+//    if ( ( abs(gl_FragCoord.x - 30) < 1 ) ){//} && (( gl_FragCoord.y - 650) > 0.4) ){
+//         col = vec3(1,.1,0);
+//     }
+
+
+//    if ( ( abs(gl_FragCoord.x - u_mouse.x) < 1 ) ){//} && (( gl_FragCoord.y - 650) > 0.4) ){
+//         col = vec3(1,1,0);
+//     }
+//    if ( ( abs(gl_FragCoord.y - u_mouse.y) < 1 ) ){//} && (( gl_FragCoord.y - 650) > 0.4) ){
+//         col = vec3(1,1,0);
+//     }
+
+
+
+    // if ( ( abs(gl_FragCoord.y - 205) < 1 )  ){
+    //     col = vec3(0,.1,0);
+    // }
+
+    // if ( ( gl_FragCoord.y > 210  )&&( gl_FragCoord.y < 210.6  )){
+    //     col = vec3(0,.1,.1);
+    // }
+
+    // if ( (distance (vec2(gl_FragCoord.xy) , vec2(1600,1010)) < 1 )  ){
+    //     col = vec3(.9,0,0);
+    // }
+
+
+    // vec2 pt0 = vec2(.4,.0);
+    // vec2 stRotated = rotatePoint(pt0, radians(-0));
+    // if ( (distance (st, stRotated )) < .004 )  {
+    //     col = vec3(.9,0,0.9);
+    // }
+
+    // //------------------------------------------------- esperimenti con rotazioni
+
+    // // st = rotatePoint(st, radians(-0));
+
+
+    // vec2 pt1 = vec2(.4,.3);
+
+    // // st -= 0.5;
+    // float angle = radians(-0); // Angolo di rotazione in radianti
+    // float zDepth = .0; // Profondità iniziale fittizia per il punto
+
+
+    // // st =  rotateAroundX(st, angle, zDepth);
+    // pt1 =  rotateAroundX(pt1, angle);
+    // if ( (distance (st, pt1 )) < .004 )  {
+    //     col = vec3(.9,0.9,0.9);
+    // }
+
+    // // //-------------------------------------------------
+
+
+    // // if ( (distance (vec2(gl_FragCoord.xy) , vec2(300,200)) < 1 )  ){
+    // //     col = vec3(.5,0,0);
+    // // }
+
+    // // cerchietto
+    // if(  
+    // (  distance (st , mouse) < 13/u_resolution.x) &&
+    // (  distance (st , mouse) > 12/u_resolution.x) 
+    // )
+    // {
+    //     col = vec3(.8,0.8,0);
+    // }
+    // //------------------------
+
+    // if  (  distance (st , center1) < 2/u_resolution.x)   {
+    //     col = vec3(.1,0.8,0.5);
+    // }
+    // if  (  distance (st , center2) < 2/u_resolution.x)   {
+    //     col = vec3(.1,0.5,0.8);
+    // }
 
 
 
@@ -144,26 +297,32 @@ void main() {
     
 
     // =0.001 : per nascondere le righe dritte,, =1
-    col *= 0.001;
+    col *= 0.99001;
 
     float cx = 0;
     float cy = 0;
 
     //-------------------------- per avere in verticale deve essere così come segue
-    maxiter += 9;
-    rd  += 3.7; 
-    cpx += 0 ;  
+    // maxiter += 5;
+    rd  += 2.6; 
+    cpx += -.5 ;  
     //-------------------------- per avere in verticale deve essere così come segue
-    cpy += -0.54 ; 
+    cpy += -0.0 ; 
 
+
+    // // siccome il chiamante usa u_mouse, devo utilizzarlo minimizzandolo al massimo
     vec2 rp = u_mouse / u_resolution;
-    cpx -= st.x * rp.x;
-    cpy += st.y * rp.y;
+    cpx -= st.x * rp.x  * 0.001;
+    cpy += st.y * rp.y * 0.001;
 
 
+    // verticale
+    // cx = st.y * rd + cpy ; 
+    // cy = st.x * rd + cpx ;
 
-    cx = st.y * rd + cpy ; 
-    cy = st.x * rd + cpx ;
+    // orizzontale
+    cy = st.y * rd + cpy ; 
+    cx = st.x * rd + cpx ;
     //--------------------------
 
     // //-------------------------- per avere in orizzontale classico deve essere così come segue
@@ -188,6 +347,13 @@ void main() {
     float zx = cx;
     float zy = cy;
     // float md = zx*zx+zy*zy;
+
+    maxiter += u_niter;
+    if (maxiter ==0) maxiter=1;
+    maxiter += 0;
+
+    maxiter += 0.0;
+
     while (md < 400 && iter < maxiter){
         temp = zx*zx - zy*zy + cx;
         zy = 2 * zx * zy + cy;
@@ -199,6 +365,9 @@ void main() {
             zyi = zy;
         }
     }
+
+
+
     float f = iter ; 
     float kv = 1.1 ;
     f = distance(vec2(zxi,zyi), vec2(0,0));
@@ -222,17 +391,17 @@ void main() {
     // f = abs(log(f)/log(kv));
 
 
-    float col1 =  sin ( 31 * f) * 0.6 + 0.5;
+    float col1 =  sin ( 7 * f) * 0.6 + 0.5;
     float col2 =  sin ( 2 * f) * 0.6 + 0.5;
     float col3 =  sin ( 3 * f) * 0.6 + 0.5;
 
-    col1 *= 0.2;
+    col1 *= 0.15;
     col2 *= 0.86;
-    col3 *= 0.2;
+    col3 *= 0.32;
     
     vec3 col4 = vec3(col1,col2,col3);
 
-    col = 2.9*col + col4; //2 * iter / maxiter;
+    col = 0.001 * col + col4; //2 * iter / maxiter;
 
     // if (
     // ((int(gl_FragCoord.x) & 0x1) == 0) &&

@@ -20,6 +20,9 @@ class FramebufferExample(pyglet.window.Window):
     def __init__(self, width, height):
 
 
+        self.niter = 1
+        self.niterP = 0
+        self.Fnumber = False
 
         super().__init__(width=width, height=height, caption="Framebuffer Example",vsync=False)
 
@@ -34,7 +37,7 @@ class FramebufferExample(pyglet.window.Window):
         # ------------
 
 
-        self.set_location(0,1200)
+        self.set_location(0,900)
 
         self.width = width
         self.height = height    
@@ -159,7 +162,6 @@ class FramebufferExample(pyglet.window.Window):
 
 
 
-
     def on_draw(self):
 
 
@@ -194,6 +196,7 @@ class FramebufferExample(pyglet.window.Window):
                 self.compile_shader()
 
 
+            self.program['u_niter'] = self.niter 
 
             self.program['u_resolution'] = (self.width, self.height)  # 
 
@@ -231,8 +234,8 @@ class FramebufferExample(pyglet.window.Window):
 
 
         # Crea una texture per immagazzinare il rendering
-        self.texture = self.ctx.texture((16000, 13500),4) # ((width, height), 4)
-        self.program['u_resolution'] = ( 16000, 13500) #self.width, self.height)  # 
+        # self.texture = self.ctx.texture((16000, 13500),4) # ((width, height), 4)
+        # self.program['u_resolution'] = ( 16000, 13500) #self.width, self.height)  # 
         # self.texture = self.ctx.texture((3200<<2, 2700<<2),4) # ((width, height), 4)
         # self.program['u_resolution'] = ( 3200<<2, 2700<<2) #self.width, self.height)  # 
         # self.texture = self.ctx.texture((3200, 2700),4) # ((width, height), 4)
@@ -243,8 +246,10 @@ class FramebufferExample(pyglet.window.Window):
         # self.program['u_resolution'] = ( 3000>>0, 2000>>0) #self.width, self.height)  # 
         # self.texture = self.ctx.texture((2400, 1900),4) # ((width, height), 4)
         # self.program['u_resolution'] = ( 2400, 1900) #self.width, self.height)  # 
-        # self.texture = self.ctx.texture((3000, 2000),4) # ((width, height), 4)
-        # self.program['u_resolution'] = (3000, 2000) #self.width, self.height)  # 
+        # self.texture = self.ctx.texture((2000, 2000),4) # ((width, height), 4)
+        # self.program['u_resolution'] = (2000, 2000) #self.width, self.height)  # 
+        self.texture = self.ctx.texture((4000, 4000),4) # ((width, height), 4)
+        self.program['u_resolution'] = (4000, 4000) #self.width, self.height)  # 
 
 
 
@@ -286,7 +291,7 @@ class FramebufferExample(pyglet.window.Window):
         image = image.transpose(Image.FLIP_TOP_BOTTOM)  # Capovolge verticalmente
 
         # Salva l'immagine
-        image.save("frame.png")
+        image.save("frame_01.png")
         print("Frame salvato come 'frame.png'")
 
 
@@ -302,7 +307,17 @@ class FramebufferExample(pyglet.window.Window):
 
 
     def on_key_press(self,symbol, modifiers):
-        print(symbol)
+        
+        n = symbol-48
+        if (n>=0) and (n<=9):
+            self.niterP = self.niterP * 10 + n
+            print(f'symbol:{symbol}, niterP: {self.niterP}  niter: {self.niter}')
+
+        if symbol == pyglet.window.key.E :
+            self.niter = self.niterP
+            self.niterP = 0
+
+
         if symbol == pyglet.window.key.A :
             print('chiedo acquisizione frame con self.Ftone = True')
             self.F01= True
@@ -318,7 +333,7 @@ class FramebufferExample(pyglet.window.Window):
     def on_mouse_motion(self, x, y, dx, dy):
         # x,y,dx,dy = super().on_mouse_motion(x, y, dx, dy)
         self.program['u_mouse'] = (x,y)
-        # print(x,y)
+        print(x-self.width/2, y-self.height/2)
         return # super().on_mouse_motion(x, y, dx, dy)
         
     def on_mouse_press(self, x, y, button, modifiers):
@@ -330,18 +345,33 @@ class FramebufferExample(pyglet.window.Window):
         self.program['u_center2'] = (x,y)
         return #super().on_mouse_release(x, y, button, modifiers)
 
+
+
 if __name__ == "__main__":
+
+
+    w = 1000
+    h = 1000
+
     # window = FramebufferExample(3840>>1, 2160>>1)
     # window = FramebufferExample(960, 1080)
     # window = FramebufferExample(1600,1350)
     # window = FramebufferExample(1600,1350)
     # window = FramebufferExample(3200>>1,2700>>1)
     # window = FramebufferExample(2400>>1,1900>>1)
-    window = FramebufferExample(3000>>1,2000>>1)
+    # window = FramebufferExample(1000>>0,1428>>0)
+    window = FramebufferExample(w,h)
 
     # Salva un frame con colore specificato
     # window.save_frame(color=(0.0, 1.0, 0.0))
 
+    @window.event
+    def on_move(x, y):
+        print(f"La finestra è stata spostata a: ({x}, {y})")
+
+    @window.event    
+    def on_resize(width, height):
+        print(f"La finestra è stata ridimensionata a: {width}x{height}")
 
     # Esegui il programma
     pyglet.app.run()
