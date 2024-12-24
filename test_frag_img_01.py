@@ -27,6 +27,18 @@ class FramebufferExample(pyglet.window.Window):
         super().__init__(width=width, height=height, caption="Framebuffer Example",vsync=False)
 
 
+        self.sLabel1 = 'ciipo...HH..0123456789,37 X   ||| H|H|.:;-+@#'
+        # Creazione della label per il testo
+        self.label1 = pyglet.text.Label( self.sLabel1, #'Hello', 
+                                    #   font_name='Arial', 
+                                      font_name="Latin Modern Mono Prop",
+                                      font_size=18, 
+                                    #   x=self.width//2, y=self.height//2,
+                                      x=0, y=self.height,
+                                      anchor_x='left', anchor_y='top')
+                                    #   anchor_x='center', anchor_y='center')
+
+
 
         # --- per ricaricare fragment_shader quando lo modicico 
         # Path al fragment shader
@@ -220,7 +232,11 @@ class FramebufferExample(pyglet.window.Window):
             # self.ctx.screen.use()  # Ripristina il rendering sulla finestra principale
             # self.program['color'] = (np.sin(pyglet.clock.get_default().time()), 0.5, 0.8)
             # self.vao.render(moderngl.TRIANGLE_STRIP)
-            
+
+            self.sLabel1 = str(time.time())
+            self.label1.text = str(self.niter)
+            self.label1.draw()
+
             pass
           
 
@@ -248,8 +264,8 @@ class FramebufferExample(pyglet.window.Window):
         # self.program['u_resolution'] = ( 2400, 1900) #self.width, self.height)  # 
         # self.texture = self.ctx.texture((2000, 2000),4) # ((width, height), 4)
         # self.program['u_resolution'] = (2000, 2000) #self.width, self.height)  # 
-        self.texture = self.ctx.texture((4000, 4000),4) # ((width, height), 4)
-        self.program['u_resolution'] = (4000, 4000) #self.width, self.height)  # 
+        self.texture = self.ctx.texture((14000, 14000),4) # ((width, height), 4)
+        self.program['u_resolution'] = (14000, 14000) #self.width, self.height)  # 
 
 
 
@@ -291,8 +307,8 @@ class FramebufferExample(pyglet.window.Window):
         image = image.transpose(Image.FLIP_TOP_BOTTOM)  # Capovolge verticalmente
 
         # Salva l'immagine
-        image.save("frame_01.png")
-        print("Frame salvato come 'frame.png'")
+        image.save("frame_02.png")
+        print("Frame salvato come 'frame_02.jpg'")
 
 
 
@@ -308,6 +324,13 @@ class FramebufferExample(pyglet.window.Window):
 
     def on_key_press(self,symbol, modifiers):
         
+        print(hex(modifiers), hex(symbol))
+
+        if (symbol == pyglet.window.key.MOD_SHIFT):
+            print('shift')
+        if (symbol == pyglet.window.key.MOD_CTRL):
+            print('ctrl')
+
         n = symbol-48
         if (n>=0) and (n<=9):
             self.niterP = self.niterP * 10 + n
@@ -329,11 +352,14 @@ class FramebufferExample(pyglet.window.Window):
             self.close()
         pass        
 
+    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
+        print(x, y, scroll_x, scroll_y)
+        pass
 
     def on_mouse_motion(self, x, y, dx, dy):
         # x,y,dx,dy = super().on_mouse_motion(x, y, dx, dy)
         self.program['u_mouse'] = (x,y)
-        print(x-self.width/2, y-self.height/2)
+        print(2*(x-self.width/2)/self.width, 2*(y-self.height/2)/self.height)
         return # super().on_mouse_motion(x, y, dx, dy)
         
     def on_mouse_press(self, x, y, button, modifiers):
@@ -374,4 +400,4 @@ if __name__ == "__main__":
         print(f"La finestra è stata ridimensionata a: {width}x{height}")
 
     # Esegui il programma
-    pyglet.app.run()
+    pyglet.app.run() 

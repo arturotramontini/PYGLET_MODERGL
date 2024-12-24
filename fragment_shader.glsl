@@ -137,7 +137,7 @@ void main() {
     st.x *= (u_resolution.x / u_resolution.y);
 
     // plane rotation
-    st = rotatePoint(st, radians(45));
+    st = rotatePoint(st, radians(0));
 
 
 
@@ -250,26 +250,26 @@ void main() {
     // // //-------------------------------------------------
 
 
-    // // if ( (distance (vec2(gl_FragCoord.xy) , vec2(300,200)) < 1 )  ){
-    // //     col = vec3(.5,0,0);
-    // // }
+    // if ( (distance (vec2(gl_FragCoord.xy) , vec2(300,200)) < 1 )  ){
+    //     col = vec3(.5,0,0);
+    // }
 
-    // // cerchietto
-    // if(  
-    // (  distance (st , mouse) < 13/u_resolution.x) &&
-    // (  distance (st , mouse) > 12/u_resolution.x) 
-    // )
-    // {
-    //     col = vec3(.8,0.8,0);
-    // }
-    // //------------------------
+    // cerchietto
+    if(  
+    (  distance (st , mouse) < 13/u_resolution.x) &&
+    (  distance (st , mouse) > 12/u_resolution.x) 
+    )
+    {
+        col = vec3(.8,0.8,0);
+    }
+    //------------------------
 
-    // if  (  distance (st , center1) < 2/u_resolution.x)   {
-    //     col = vec3(.1,0.8,0.5);
-    // }
-    // if  (  distance (st , center2) < 2/u_resolution.x)   {
-    //     col = vec3(.1,0.5,0.8);
-    // }
+    if  (  distance (st , center1) < 2/u_resolution.x)   {
+        col = vec3(.1,0.8,0.5);
+    }
+    if  (  distance (st , center2) < 2/u_resolution.x)   {
+        col = vec3(.1,0.5,0.8);
+    }
 
 
 
@@ -304,10 +304,21 @@ void main() {
 
     //-------------------------- per avere in verticale deve essere così come segue
     // maxiter += 5;
-    rd  += 2.6; 
-    cpx += -.5 ;  
+    rd  += 4; 
+    cpx += 0.0000364 ;  
+    cpy += 0.00006 ; 
     //-------------------------- per avere in verticale deve essere così come segue
-    cpy += -0.0 ; 
+
+
+    // cpx += -1.0;
+
+    // cpx -= 0.002 ;
+    // cpy += 0.0023;
+    // rd /= 9712 ;
+
+    cpx += 0.000019 ;
+    cpy += 0.000004;
+    rd *= 1 ;
 
 
     // // siccome il chiamante usa u_mouse, devo utilizzarlo minimizzandolo al massimo
@@ -349,12 +360,12 @@ void main() {
     // float md = zx*zx+zy*zy;
 
     maxiter += u_niter;
-    if (maxiter ==0) maxiter=1;
+    if (maxiter ==0) maxiter = 33;
     maxiter += 0;
 
     maxiter += 0.0;
 
-    while (md < 400 && iter < maxiter){
+    while (md < 40 && iter < maxiter){
         temp = zx*zx - zy*zy + cx;
         zy = 2 * zx * zy + cy;
         iter += 1;
@@ -371,18 +382,24 @@ void main() {
     float f = iter ; 
     float kv = 1.1 ;
     f = distance(vec2(zxi,zyi), vec2(0,0));
-    f *= 1;
-    f = max(f,1e-4);
+    f /= 8; //(log(iter));
+    f = pow(f,1.1);
+    f = max(f,1e-26);
+
+    // f = abs(log(f)/log(1.7));
     // f = abs(log(f)/log(10));
     // f = abs(log(f)/log(10));
     // f = abs(log(f)/log(10));
+
+    // f = abs(log(f)/log(2));
+    
     // f = abs(log(f)/log(10));
-    f = abs(log(f)/log(10));
     // f = abs(log(f)/log(10));
-    // f = abs(log(f)/log(10));
-    f = abs(log(f)/log(1.01));
+    
+    f = abs(log(f)/log(1.1));
     f = abs(log(f)/log(3.3));
     f = abs(log(f)/log(kv));
+    
     // f = abs(log(f)/log(kv));
     // f = abs(log(f)/log(kv));
     // // f = abs(log(f)/log(kv));
@@ -391,17 +408,38 @@ void main() {
     // f = abs(log(f)/log(kv));
 
 
-    float col1 =  sin ( 7 * f) * 0.6 + 0.5;
-    float col2 =  sin ( 2 * f) * 0.6 + 0.5;
+    float col1 =  sin ( 1 * f) * 1.4 + 0.5;
+    float col2 =  sin ( 5 * f) * 0.6 + 0.5;
     float col3 =  sin ( 3 * f) * 0.6 + 0.5;
 
-    col1 *= 0.15;
-    col2 *= 0.86;
-    col3 *= 0.32;
+    col1 *= 0.115;
+    col2 *= 0.956;
+    col3 *= 0.912;
     
+
+
     vec3 col4 = vec3(col1,col2,col3);
 
-    col = 0.001 * col + col4; //2 * iter / maxiter;
+
+    
+    // per vedere assi 0.99    
+    col = 0.99001 * col + 0.9 * col4; //2 * iter / maxiter;
+
+    // if ((iter == 10) || ( iter==5)){
+    //     col *= 0.991;
+    // }else{
+    //     col *= 0.81;
+    // }
+
+    float c1 = col.r ;
+    float c2 = col.g ;
+    float c3 = col.b ;
+
+    col.r = c1 * 4 ;
+    col.g = c2 ;
+    col.b = c3 ; 
+
+    col.r =  (int(col.r * 255) ^ 0xff ) / 255;
 
     // if (
     // ((int(gl_FragCoord.x) & 0x1) == 0) &&
